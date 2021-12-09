@@ -1,4 +1,4 @@
-let dbConn = require("../../config/db.config");
+let { dbConn, pool } = require("../../config/db.config");
 
 let Employee = function (employee) {
   this.first_name = employee.first_name;
