@@ -9,10 +9,34 @@ const {
 
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
+const Validator = require("fastest-validator");
+
+//define validation schema
+const schema = {
+  firstName: { type: "string", optional: false, max: "20", min: "2" },
+  lastName: { type: "string", optional: false, max: "20", min: "2" },
+  gender: { type: "enum", values: ["male", "female"], optional: false },
+  email: { type: "email", optional: false },
+  password: { type: "string", optional: false, min: "6" },
+  number: { type: "string", optional: false, length: "10" },
+};
 
 module.exports = {
   createUser: (req, res) => {
     const body = req.body;
+
+    //create a new instance of validation class
+    const v = new Validator();
+    const validationResponse = v.validate(body, schema);
+    //if validation is passed sbove method will return true.otherwise it will returns a set of errors
+
+    if (validationResponse !== true) {
+      return res.status(400).json({
+        message: "Validation Failed",
+        errors: validationResponse,
+      });
+    }
+
     //to store encrypted password in db
     const salt = genSaltSync(10);
     body.password = hashSync(body.password, salt);

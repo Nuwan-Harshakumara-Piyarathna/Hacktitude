@@ -1,5 +1,18 @@
 const Employee = require("../models/Employee");
 
+const Validator = require("fastest-validator");
+
+//define validation schema
+const schema = {
+  first_name: { type: "string", optional: false, max: "20", min: "2" },
+  last_name: { type: "string", optional: false, max: "20", min: "2" },
+  email: { type: "email", optional: false },
+  phone: { type: "string", optional: false, length: "10" },
+  organization: { type: "string", optional: false, max: "100", min: "3" },
+  designation: { type: "string", optional: false, max: "100", min: "5" },
+  salary: { type: "number", positive: true },
+};
+
 //get all employees list
 exports.getEmployeeList = (req, res) => {
   Employee.getAllEmployees((err, employees) => {
@@ -26,22 +39,30 @@ exports.getEmployeeByID = (req, res) => {
 exports.createNewEmployee = (req, res) => {
   const employeeReqData = new Employee(req.body);
   console.log("employee = ", employeeReqData);
-  //check null
-  if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
-    res.send(400).send({ success: false, message: "Please fill all fields" });
-  } else {
-    Employee.createEmployee(employeeReqData, (err, employee) => {
-      if (err) {
-        res.send(err);
-      } else {
-        res.json({
-          status: true,
-          message: "Employee Created Successfully",
-          data: employee.insertId,
-        });
-      }
+
+  //create a new instance of validation class
+  const v = new Validator();
+  const validationResponse = v.validate(req.body, schema);
+  //if validation is passed sbove method will return true.otherwise it will returns a set of errors
+
+  if (validationResponse !== true) {
+    return res.status(400).json({
+      message: "Validation Failed",
+      errors: validationResponse,
     });
   }
+
+  Employee.createEmployee(employeeReqData, (err, employee) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.json({
+        status: true,
+        message: "Employee Created Successfully",
+        data: employee.insertId,
+      });
+    }
+  });
 };
 
 //update employee
