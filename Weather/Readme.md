@@ -1,3 +1,9 @@
+
+API created with webscrapped data
+
+# Resource
+https://www.youtube.com/watch?v=GK4Pl-GmPHk
+
 # Setup
 
 	npm init
