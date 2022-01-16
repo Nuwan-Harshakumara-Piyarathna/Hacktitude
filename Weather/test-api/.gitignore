@@ -5,4 +5,4 @@ node_modules/
 # .env
 
 # TernJS port file
-package-lock.json
+#package-lock.json
