@@ -7,7 +7,7 @@ const {
 } = require("../controllers/blogController");
 
 const router = require("express").Router();
-
+//hello
 router.post("/add", createBlog);
 router.get("/", getBlogs);
 router.get("/:id", getBlogByBlogId);
